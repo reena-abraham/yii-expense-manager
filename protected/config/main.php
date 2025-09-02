@@ -7,7 +7,7 @@
 // CWebApplication properties can be configured here.
 return array(
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
-	'name'=>'My Web Application',
+	'name'=>'Expense Manage System',
 
 	// preloading 'log' component
 	'preload'=>array('log'),
@@ -20,18 +20,28 @@ return array(
 
 	'modules'=>array(
 		// uncomment the following to enable the Gii tool
-		/*
+		
 		'gii'=>array(
 			'class'=>'system.gii.GiiModule',
-			'password'=>'Enter Your Password Here',
+			'password'=>'admin123',
 			// If removed, Gii defaults to localhost only. Edit carefully to taste.
 			'ipFilters'=>array('127.0.0.1','::1'),
 		),
-		*/
+		
 	),
+	'aliases' => array(
+    'application.extensions.EExcelView' => 'protected/extensions/EExcelView/EExcelView.php',
+),
 
 	// application components
 	'components'=>array(
+		'request' => array(
+			'enableCsrfValidation' => true, // Enable CSRF validation
+			'csrfTokenName' => 'YII_CSRF_TOKEN', // Set CSRF token name for security
+			'csrfCookie' => array(
+				'httpOnly' => true, // Ensure the cookie is only accessible via HTTP
+			),
+		),
 
 		'user'=>array(
 			// enable cookie-based authentication
@@ -65,6 +75,7 @@ return array(
 				array(
 					'class'=>'CFileLogRoute',
 					'levels'=>'error, warning',
+					'logFile' => 'application.log',
 				),
 				// uncomment the following to show log messages on web pages
 				/*
