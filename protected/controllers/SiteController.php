@@ -167,6 +167,7 @@ class SiteController extends Controller
 
 	public function actionAdminDashboard()
 	{
+		$this->layout = 'admin';
 		// Only allow admin
 		if (Yii::app()->user->getState('role') != 1) {
 			throw new CHttpException(403, 'Unauthorized access');

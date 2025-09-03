@@ -19,6 +19,8 @@
  */
 class Expense extends CActiveRecord
 {
+	public $date_from;
+	public $date_to;
 	/**
 	 * @return string the associated database table name
 	 */
@@ -37,13 +39,13 @@ class Expense extends CActiveRecord
 		return array(
 			array('amount, category_id, date, user_id', 'required'),
 			array('amount', 'numerical', 'integerOnly' => false),
-			array('amount', 'numerical', 'min' => 0), 
-			
+			array('amount', 'numerical', 'min' => 0),
+
 			array('category_id, user_id', 'length', 'max' => 11),
 			array('description, created_at, updated_at', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, amount, category, description, date', 'safe', 'on' => 'search'),
+			array('id, amount, category, description, date_from, date_to', 'safe', 'on' => 'search'),
 		);
 	}
 
@@ -94,8 +96,9 @@ class Expense extends CActiveRecord
 		// @todo Please modify the following code to remove attributes that should not be searched.
 
 		$criteria = new CDbCriteria;
-
-		$criteria->compare('user_id', Yii::app()->user->id);
+		if (Yii::app()->user->getState('role') == 2) {
+			$criteria->compare('user_id', Yii::app()->user->id);
+		}
 
 
 		$criteria->compare('id', $this->id, true);
@@ -113,11 +116,21 @@ class Expense extends CActiveRecord
 			// $criteria->with = array('category');
 			$criteria->compare('category_id', $this->category_id);
 		}
+		if (!empty($this->date_from) && !empty($this->date_to)) {
+			$criteria->addBetweenCondition('date', $this->date_from, $this->date_to);
+		} elseif (!empty($this->date_from)) {
+			$criteria->addCondition("date >= '{$this->date_from}'");
+		} elseif (!empty($this->date_to)) {
+			$criteria->addCondition("date <= '{$this->date_to}'");
+		}
 
-		$command = Yii::app()->db->commandBuilder->createFindCommand($this->tableName(), $criteria);
-		Yii::log('Generated SQL query: ' . $command->getText(), 'info');
+		//$command = Yii::app()->db->commandBuilder->createFindCommand($this->tableName(), $criteria);
+		//Yii::log('Generated SQL query: ' . $command->getText(), 'info');
 		return new CActiveDataProvider($this, array(
 			'criteria' => $criteria,
+			'pagination' => array(
+				'pageSize' => 1, // Change as needed
+			),
 		));
 	}
 
@@ -143,5 +156,4 @@ class Expense extends CActiveRecord
 
 		return parent::beforeSave();
 	}
-	
 }

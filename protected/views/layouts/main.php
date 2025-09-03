@@ -22,6 +22,9 @@
 	<link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">
 
 	<title><?php echo CHtml::encode($this->pageTitle); ?></title>
+	<style>
+		
+		</style>
 </head>
 
 <body>

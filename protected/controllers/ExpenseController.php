@@ -6,6 +6,7 @@ class ExpenseController extends Controller
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.
 	 */
+
 	public $layout = '//layouts/column2';
 
 	/**
@@ -37,11 +38,12 @@ class ExpenseController extends Controller
 				'actions' => array('create', 'update', 'admin', 'delete', 'ExportCsv', 'list'),
 				'users' => array('@'),
 			),
-			// array(
-			// 	'allow', // allow admin user to perform 'admin' and 'delete' actions
-			// 	'actions' => array('admin', 'delete'),
-			// 	'users' => array('admin'),
-			// ),
+			array(
+				'allow',  // allow only users with role_id = 1 to access admin
+				'actions' => array('admin'),
+				'users' => array('@'),
+				'expression' => 'Yii::app()->user->role_id == 1',
+			),
 			array(
 				'deny',  // deny all users
 				'users' => array('*'),
@@ -167,6 +169,7 @@ class ExpenseController extends Controller
 	 */
 	public function actionAdmin()
 	{
+		$this->layout = 'admin';
 		$model = new Expense('search');
 		$model->unsetAttributes();  // clear any default values
 		if (isset($_GET['Expense'])) {
@@ -189,7 +192,7 @@ class ExpenseController extends Controller
 				'params' => array(':user_id' => Yii::app()->user->id),  // Bind the user ID parameter
 			),
 			'pagination' => array(
-				'pageSize' => 1,  // Number of records to display per page
+				'pageSize' => 10,  // Number of records to display per page
 			),
 		));
 
@@ -264,7 +267,7 @@ class ExpenseController extends Controller
 		// }
 		// Fetch all expenses from the database (You can modify this query to filter as needed)
 		$criteria = new CDbCriteria;
-		$criteria->select = 'id, amount, category_id, description, date'; // Select the relevant columns
+		$criteria->select = 'id, amount, user_id,category_id, description, date'; // Select the relevant columns
 		$criteria->order = 'date DESC'; // Order by date (can modify as per need)
 		$expenses = Expense::model()->findAll($criteria);
 
@@ -278,7 +281,7 @@ class ExpenseController extends Controller
 		header('Expires: 0');
 
 		// Write the column headers to the CSV
-		fputcsv($csv, array('ID', 'Amount', 'Category', 'Description', 'Date'));
+		fputcsv($csv, array('ID', 'Amount', 'User','Category', 'Description', 'Date'));
 
 		// Write the expense data to the CSV
 		foreach ($expenses as $expense) {
@@ -286,10 +289,14 @@ class ExpenseController extends Controller
 			$category = Category::model()->findByPk($expense->category_id);
 			$categoryName = $category ? $category->name : 'N/A';
 
+			$user = User::model()->findByPk($expense->user_id);
+			$username = $user ? $user->username : 'N/A';
+
 			// Prepare the data row
 			$row = array(
 				$expense->id,
 				$expense->amount,
+				$username,
 				$categoryName,
 				$expense->description,
 				$expense->date

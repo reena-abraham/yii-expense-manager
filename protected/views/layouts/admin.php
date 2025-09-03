@@ -75,9 +75,9 @@
 							</li>
 						<?php endif; ?>
 
-						<?php if (!Yii::app()->user->isGuest && Yii::app()->user->getState('role') == 2): ?>
+						<?php if (!Yii::app()->user->isGuest && Yii::app()->user->getState('role') == 1): ?>
 							<li class="nav-item">
-								<?php echo CHtml::link('Expense', array('/expense/index'), array('class' => 'nav-link')); ?>
+								<?php echo CHtml::link('Expense', array('/expense/admin'), array('class' => 'nav-link')); ?>
 							</li>
 						<?php endif; ?>
 

@@ -14,7 +14,7 @@
 
 <!-- <h1>Expenses</h1> -->
 
-<?php 
+<?php
 // $this->widget('zii.widgets.CListView', array(
 // 	'dataProvider'=>$dataProvider,
 // 	'itemView'=>'_view',
@@ -56,7 +56,7 @@ $('.search-form form').submit(function(){
 	or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.
 </p> -->
 
-<?php 
+<?php
 // echo CHtml::link('Advanced Search', '#', array('class' => 'search-button')); 
 ?>
 <div class="search-form" style="display:none">
@@ -67,9 +67,9 @@ $('.search-form form').submit(function(){
 
 <!-- Add a button to trigger the CSV export -->
 <?php echo CHtml::link('Export to CSV', array('expense/exportCsv'), array('class' => 'btn btn-success')); ?>
-<?php echo CHtml::link('Create Expense', array('expense/create'), array('class' => 'btn btn-info','style' => 'float: right;')); ?>
+<?php echo CHtml::link('Create Expense', array('expense/create'), array('class' => 'btn btn-info', 'style' => 'float: right;')); ?>
 
-<?php echo CHtml::link('List Expense', array('expense/list'), array('class' => 'btn btn-info','style' => 'float: right;margin-right: 10px;')); ?> 
+<?php echo CHtml::link('List Expense', array('expense/list'), array('class' => 'btn btn-info', 'style' => 'float: right;margin-right: 10px;')); ?>
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id' => 'expense-grid',
@@ -82,13 +82,20 @@ $('.search-form form').submit(function(){
 		array(
 			'name' => 'category_id',
 			'value' => '$data->category ? $data->category->name : "N/A"',
-			 'filter' => CHtml::activeDropDownList($model, 'category_id', 
-                CHtml::listData(Category::model()->findAll(), 'id', 'name'), 
-                array('empty' => '-- Select Category --')
-				 ),
+			'filter' => CHtml::activeDropDownList(
+				$model,
+				'category_id',
+				CHtml::listData(Category::model()->findAll(), 'id', 'name'),
+				array('empty' => '-- Select Category --')
+			),
 		),
 		'description',
-		'date',
+		array(
+			'name' => 'date',
+			'filter' =>
+			'From: ' . CHtml::activeTextField($model, 'date_from', array('placeholder' => 'YYYY-MM-DD')) .
+				'<br>To: ' . CHtml::activeTextField($model, 'date_to', array('placeholder' => 'YYYY-MM-DD')),
+		),
 
 		/*
 		'created_at',
@@ -97,11 +104,20 @@ $('.search-form form').submit(function(){
 		array(
 			'class' => 'CButtonColumn',
 		),
-		
+
 	),
-	'pager' => array(
-        'class' => 'CLinkPager',  // CLinkPager allows you to customize the appearance of pagination links
-        'header' => '',  // Remove the "Go to page" text
-        'htmlOptions' => array('class' => 'pagination'), // You can use Bootstrap's pagination styling
-    ),
+	// 	'pager' => array(
+	//     'class' => 'CLinkPager',
+	//     'header' => '',
+	//     'maxButtonCount' => 5,
+	//     'htmlOptions' => array('class' => 'pagination justify-content-center'), // Bootstrap 4/5 class for centering
+	//     'selectedPageCssClass' => 'active',
+	//     'hiddenPageCssClass' => 'disabled',
+	//     'firstPageLabel' => '&laquo;', // «
+	//     'lastPageLabel' => '&raquo;',  // »
+	//     'nextPageLabel' => '&rsaquo;', // ›
+	//     'prevPageLabel' => '&lsaquo;', // ‹
+	//     'htmlOptions' => array('class' => 'pagination'),
+	//     'cssFile' => false, // Disable default Yii CSS for pager to avoid conflicts
+	// ),
 )); ?>
